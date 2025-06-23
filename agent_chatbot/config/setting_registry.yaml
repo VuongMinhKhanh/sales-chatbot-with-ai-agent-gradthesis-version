@@ -1,0 +1,29 @@
+# ————————————————————————————————
+# 2. Application settings (non-secret)
+# ————————————————————————————————
+
+# Which Weaviate collections to use
+collection_names:
+  - business_logic
+  - user_feedback
+
+# How many docs to retrieve per query
+top_k_retrieval: 3
+
+# Vectorstore configuration
+weaviate_vectorstore:
+  class_name: "ChatBot_769Audio"
+  text_key: "text"
+
+# Model names & tuning parameters
+model_configs:
+  chat_model: "gpt-4o-mini"
+  embedding_model: "text-embedding-3-large"
+  temperature: 0.5
+
+# LangSmith (tracking) settings
+langsmith:
+  api_key: "${LANGCHAIN_API_KEY}"
+  tracing_v2: true
+  endpoint: "https://api.smith.langchain.com"
+  project: "Sales Consulting ChatBot"

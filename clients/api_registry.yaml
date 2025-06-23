@@ -1,0 +1,84 @@
+# clients/api_registry.yaml
+
+# ————————————————————————————————
+# 1. External API clients (unchanged)
+# ————————————————————————————————
+
+qdrant:
+  client_class: qdrant_client.QdrantClient
+  init_args:
+    url: "${QDRANT_CLOUD_URL}"
+    api_key: "${QDRANT_API_KEY}"
+
+openai_embeddings:
+  client_class: langchain_openai.OpenAIEmbeddings
+  init_args:
+    model: "text-embedding-3-large"
+
+weaviate:
+  client_class: clients.weaviate_factory.make_weaviate_client
+  init_args:
+    cluster_url: "${WEAVIATE_URL}"
+    api_key:     "${WEAVIATE_API_KEY}"
+    openai_api_key: "${OPENAI_API_KEY}"
+
+redis:
+  client_class: redis.Redis
+  init_args:
+    host: "${REDIS_HOST}"
+    port: "${REDIS_PORT}"
+    password: "${REDIS_PASS}"
+    db: 0
+
+llm_generic:
+  client_class: langchain_openai.ChatOpenAI
+  init_args:
+    model: "gpt-4o-mini"
+    temperature: 0
+
+llm_generic_with_json:
+  client_class: langchain_openai.ChatOpenAI
+  init_args:
+    model: "gpt-4o-mini"
+    temperature: 0
+    model_kwargs:
+      response_format:
+        type: "json_object"
+
+llm_agent1_dispatch:
+  client_class: langchain_openai.ChatOpenAI
+  init_args:
+    model: "gpt-4o-mini"
+    temperature: 0.5
+    streaming: true
+    model_kwargs:
+      response_format:
+        type: "json_object"
+
+llm_agent2_contextualization:
+  client_class: langchain_openai.ChatOpenAI
+  init_args:
+    model: "gpt-4o-mini"
+    temperature: 0
+    streaming: false
+    model_kwargs:
+      response_format:
+        type: "json_object"
+
+llm_agent2_response:
+  client_class: langchain_openai.ChatOpenAI
+  init_args:
+    model: "gpt-4o-mini"
+    temperature: 0
+    streaming: false
+
+llm_agent3_followup:
+  client_class: langchain_openai.ChatOpenAI
+  init_args:
+    model: "gpt-4o-mini"
+    temperature: 0
+    streaming: false
+    model_kwargs:
+      response_format:
+        type: "json_object"
+

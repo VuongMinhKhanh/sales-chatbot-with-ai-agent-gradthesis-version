@@ -1,0 +1,103 @@
+agents:
+  Agent1:
+    llm_keys:
+      generic_json: "llm_generic_with_json"
+
+  Agent2:
+    class: "agents.agent2.agent2.Agent2"
+    llm_keys:
+      contextualization: "llm_agent2_contextualization"
+      response: "llm_agent2_response"
+    description: >
+      Lấy thông tin chi tiết về sản phẩm (tính năng, so sánh, giá cả,
+      thông số kỹ thuật).
+    when_to_use: >
+      Khi khách hỏi về sản phẩm: “tính năng”, “so sánh”, “giá”, “thông số”...
+    payload_schema:
+      hint:
+        description: "Gợi ý cho agent xử lý"
+        type: string
+
+  Agent3:
+    class: "agents.agent3.agent3.Agent3"
+    llm_keys:
+      followup: "llm_agent3_followup"
+      generic_json: "llm_generic_with_json"
+    description: >
+      Sinh câu hỏi tiếp theo (follow-up) hoặc kêu gọi hành động (CTA)
+      để dẫn dắt khách hàng qua các bước bán hàng.
+    when_to_use: >
+      Hầu hết trường hợp không phải greeting hoặc checkout, trừ khi
+      đã có câu hỏi mở từ bot; hoặc khi cần hỏi thêm thông tin.
+    payload_schema:
+      hint:
+        description: "Gợi ý cho agent xử lý"
+        type: string
+
+  Agent4:
+    llm_keys:
+      generic_json: "llm_generic_with_json"
+
+  Agent5:
+    class: "agents.agent5.agent5.agent5_simulated_checkout"
+    llm_keys:
+    description: >
+      Xử lý bước đặt hàng, thu thập tên & điện thoại,
+      và gọi API đặt hàng.
+    when_to_use: >
+      Khi đã xác định khách **muốn đặt hàng** và các **thông tin cần thiết** cho đặt hàng.
+
+    # 1) These top-level keys _must_ be present in payload
+    required_context_keys:
+      - actions
+      - apis
+
+    # 2) Within actions.payload.customer_info, these fields must be non-empty
+    required_params:
+      - conversation_id
+      - name
+      - phone
+
+    # 3) Payload schema hints (optional, for validation)
+    payload_schema:
+      conversation_id:
+        description: "ID của cuộc hội thoại"
+        type: integer
+      cart:
+        description: "Danh sách sản phẩm (mảng các đối tượng)"
+        type: array
+        items:
+          type: object
+          properties:
+            product_id:
+              type: integer
+            name:
+              type: string
+            quantity:
+              type: integer
+            price:
+              type: number
+          required:
+            - product_id
+      customer_info:
+        description: "Thông tin khách hàng"
+        type: object
+        required:
+          - name
+          - phone
+        properties:
+          name:
+            description: "Tên đầy đủ của khách hàng"
+            type: string
+          phone:
+            description: "Số điện thoại của khách hàng"
+            type: string
+
+    # 4) How to call downstream API
+    api_call:
+      client: order_api
+      method: send_checkout_form
+      args:
+        - conversation_id
+        - cart
+        - customer_info
